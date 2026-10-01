@@ -1,4 +1,17 @@
+using LearningTracker.Api.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Get connection lines
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Строка подключения DefaultConnection не найдена");
+
+// Register contextDb
+builder.Services.AddDbContext<LearningTrackerDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // Add services to the container.
 
@@ -12,6 +25,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint(
+            "/openapi/v1.json",
+            "LearningTracker API v1");
+    });
 }
 
 app.UseHttpsRedirection();
