@@ -1,8 +1,7 @@
-﻿using LearningTracker.Api.Data;
-using LearningTracker.Api.Dto;
+﻿using LearningTracker.Api.Dto;
 using LearningTracker.Api.Models;
+using LearningTracker.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LearningTracker.Api.Controllers;
 
@@ -10,30 +9,26 @@ namespace LearningTracker.Api.Controllers;
 [Route("api/[controller]")]
 public class LearningTopicsController : ControllerBase
 {
-    private readonly LearningTrackerDbContext _context;
-    public LearningTopicsController(LearningTrackerDbContext context)
+    private readonly ILearningTopicService _service;
+    public LearningTopicsController(ILearningTopicService service)
     {
-        _context = context;
+        _service = service;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<LearningTopic>>> GetAll()
     {
-        var topics = await _context.LearningTopics
-            .AsNoTracking()
-            .OrderByDescending(topic => topic.CreatedAtUtc)
-            .ToListAsync();
-
+        var topics = await _service.GetAllAsync();
         return Ok(topics);
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<LearningTopic>> GetById(int id)
     {
-        var topic = await _context.LearningTopics.FindAsync(id);
+        var topic = await _service.GetByIdAsync(id);
 
         if (topic is null)
-            return NotFound("Такого айди не найдено");
+            return NotFound("ID не найден");
 
         return Ok(topic);
 
@@ -42,13 +37,10 @@ public class LearningTopicsController : ControllerBase
     [HttpPatch("{id:int}/complete")]
     public async Task<ActionResult<LearningTopic>> Complete(int id)
     {
-        var topic = await _context.LearningTopics.FindAsync(id);
+        var topic = await _service.CompleteAsync(id);
+
         if (topic is null)
             return NotFound("ID не найден");
-
-        topic.IsCompleted = true;
-
-        await _context.SaveChangesAsync();
 
         return Ok(topic);
     }
@@ -58,40 +50,38 @@ public class LearningTopicsController : ControllerBase
     CreateLearningTopicRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Title))
-            return BadRequest("Название темы не может быть пустым");
+            return BadRequest("Топик не может быть пустым");
 
-        var topic = new LearningTopic
-        {
-            Title = request.Title,
-            Description = request.Description,
-            CreatedAtUtc = DateTime.UtcNow,
-            IsCompleted = false
-        };
-
-        _context.LearningTopics.Add(topic);
-        await _context.SaveChangesAsync();
+        var createdTopic = await _service.CreateAsync(request);
 
         return CreatedAtAction(
             nameof(GetById),
-            new {id = topic.Id},
-            topic);
+            new { id = createdTopic.Id },
+            createdTopic);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var topic = await _context.LearningTopics.FindAsync(id);
+        var deleted = await _service.DeleteAsync(id);
+
+        if (!deleted)
+            return NotFound("ID не найден");
+
+        return NoContent();
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<LearningTopic>> Update(int id, UpdateLearningTopicRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Title))
+            return BadRequest("Топик не может быть пустым");
+
+        var topic = await _service.UpdateAsync(id, request);
 
         if (topic is null)
             return NotFound("ID не найден");
 
-        _context.LearningTopics.Remove(topic);
-
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-
-
+        return Ok(topic);
     }
-
 }

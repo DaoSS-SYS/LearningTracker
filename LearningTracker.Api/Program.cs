@@ -1,5 +1,9 @@
 using LearningTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using LearningTracker.Api.Repositories;
+using LearningTracker.Api.Repositories.Interfaces;
+using LearningTracker.Api.Services;
+using LearningTracker.Api.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +16,10 @@ var connectionString =
 // Register contextDb
 builder.Services.AddDbContext<LearningTrackerDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+// Register DI 
+builder.Services.AddScoped<ILearningTopicRepository, LearningTopicRepository>();
+builder.Services.AddScoped<ILearningTopicService, LearningTopicService>();
 
 // Add services to the container.
 
