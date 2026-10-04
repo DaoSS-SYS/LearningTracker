@@ -49,9 +49,6 @@ public class LearningTopicsController : ControllerBase
     public async Task<ActionResult<LearningTopic>> Create(
     CreateLearningTopicRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Title))
-            return BadRequest("Топик не может быть пустым");
-
         var createdTopic = await _service.CreateAsync(request);
 
         return CreatedAtAction(
@@ -74,9 +71,6 @@ public class LearningTopicsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<LearningTopic>> Update(int id, UpdateLearningTopicRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Title))
-            return BadRequest("Топик не может быть пустым");
-
         var topic = await _service.UpdateAsync(id, request);
 
         if (topic is null)
