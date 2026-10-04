@@ -28,7 +28,7 @@ public class LearningTopicsController : ControllerBase
         var topic = await _service.GetByIdAsync(id);
 
         if (topic is null)
-            return NotFound("ID не найден");
+            return TopicNotFound(id);
 
         return Ok(topic);
 
@@ -40,7 +40,7 @@ public class LearningTopicsController : ControllerBase
         var topic = await _service.CompleteAsync(id);
 
         if (topic is null)
-            return NotFound("ID не найден");
+            return TopicNotFound(id);
 
         return Ok(topic);
     }
@@ -63,7 +63,7 @@ public class LearningTopicsController : ControllerBase
         var deleted = await _service.DeleteAsync(id);
 
         if (!deleted)
-            return NotFound("ID не найден");
+            return TopicNotFound(id);
 
         return NoContent();
     }
@@ -74,8 +74,15 @@ public class LearningTopicsController : ControllerBase
         var topic = await _service.UpdateAsync(id, request);
 
         if (topic is null)
-            return NotFound("ID не найден");
+            return TopicNotFound(id);
 
         return Ok(topic);
+    }
+
+    private ObjectResult TopicNotFound(int id)
+    {
+        return Problem(detail: $"Тема с ID = {id} не найдена",
+                           statusCode: StatusCodes.Status404NotFound,
+                           title: "Тема не найдена");
     }
 }
