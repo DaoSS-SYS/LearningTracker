@@ -26,22 +26,13 @@ public class LearningTopicsController : ControllerBase
     public async Task<ActionResult<LearningTopic>> GetById(int id)
     {
         var topic = await _service.GetByIdAsync(id);
-
-        if (topic is null)
-            return TopicNotFound(id);
-
         return Ok(topic);
-
     }
 
     [HttpPatch("{id:int}/complete")]
     public async Task<ActionResult<LearningTopic>> Complete(int id)
     {
         var topic = await _service.CompleteAsync(id);
-
-        if (topic is null)
-            return TopicNotFound(id);
-
         return Ok(topic);
     }
 
@@ -60,11 +51,7 @@ public class LearningTopicsController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var deleted = await _service.DeleteAsync(id);
-
-        if (!deleted)
-            return TopicNotFound(id);
-
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 
@@ -72,17 +59,6 @@ public class LearningTopicsController : ControllerBase
     public async Task<ActionResult<LearningTopic>> Update(int id, UpdateLearningTopicRequest request)
     {
         var topic = await _service.UpdateAsync(id, request);
-
-        if (topic is null)
-            return TopicNotFound(id);
-
         return Ok(topic);
-    }
-
-    private ObjectResult TopicNotFound(int id)
-    {
-        return Problem(detail: $"Тема с ID = {id} не найдена",
-                           statusCode: StatusCodes.Status404NotFound,
-                           title: "Тема не найдена");
     }
 }

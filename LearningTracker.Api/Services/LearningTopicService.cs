@@ -1,4 +1,6 @@
-﻿using LearningTracker.Api.Dto;
+﻿using LearningTracker.Api.Controllers;
+using LearningTracker.Api.Dto;
+using LearningTracker.Api.Exceptions;
 using LearningTracker.Api.Models;
 using LearningTracker.Api.Repositories.Interfaces;
 using LearningTracker.Api.Services.Interfaces;
@@ -16,11 +18,12 @@ public class LearningTopicService : ILearningTopicService
     {
         return await _repository.GetAllAsync();
     }
-    public async Task<LearningTopic?> GetByIdAsync(int id)
+    public async Task<LearningTopic> GetByIdAsync(int id)
     {
-        return await _repository.GetByIdAsync(id);
+        var topic = await GetTopicOrThrowAsync(id);
+        return topic;
     }
-    
+
     public async Task<LearningTopic> CreateAsync(CreateLearningTopicRequest request)
     {
         var topic = new LearningTopic{Title = request.Title, CreatedAtUtc = DateTime.UtcNow, Description = request.Description, IsCompleted = false};
@@ -28,11 +31,9 @@ public class LearningTopicService : ILearningTopicService
         await _repository.SaveChangesAsync();
         return topic;
     }
-    public async Task<LearningTopic?> UpdateAsync(int id, UpdateLearningTopicRequest request)
+    public async Task<LearningTopic> UpdateAsync(int id, UpdateLearningTopicRequest request)
     {
-        var topic = await _repository.GetByIdAsync(id);
-        if(topic is null)
-            return null;
+        var topic = await GetTopicOrThrowAsync(id);
 
         topic.Title = request.Title;
         topic.Description = request.Description;
@@ -41,11 +42,9 @@ public class LearningTopicService : ILearningTopicService
 
         return topic;
     }
-    public async Task<LearningTopic?> CompleteAsync(int id)
+    public async Task<LearningTopic> CompleteAsync(int id)
     {
-        var topic = await _repository.GetByIdAsync(id);
-        if (topic is null)
-            return null;
+        var topic = await GetTopicOrThrowAsync(id);
 
         topic.IsCompleted = true;
 
@@ -53,16 +52,21 @@ public class LearningTopicService : ILearningTopicService
 
         return topic;
     }
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var topic = await _repository.GetByIdAsync(id);
-        if (topic is null)
-            return false;
+        var topic = await GetTopicOrThrowAsync(id);
 
         _repository.Remove(topic);
 
         await _repository.SaveChangesAsync();
-
-        return true;
     }
+    private async Task<LearningTopic> GetTopicOrThrowAsync(int id)
+    {
+        var topic = await _repository.GetByIdAsync(id);
+        if(topic is null)
+            throw new TopicNotFoundException(id);
+
+        return topic;
+    }
+
 }
