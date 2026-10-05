@@ -1,6 +1,6 @@
-﻿using LearningTracker.Api.Controllers;
-using LearningTracker.Api.Dto;
+﻿using LearningTracker.Api.Dto;
 using LearningTracker.Api.Exceptions;
+using LearningTracker.Api.Mapping;
 using LearningTracker.Api.Models;
 using LearningTracker.Api.Repositories.Interfaces;
 using LearningTracker.Api.Services.Interfaces;
@@ -14,24 +14,25 @@ public class LearningTopicService : ILearningTopicService
     {
         _repository = repository;
     }
-    public async Task<List<LearningTopic>> GetAllAsync()
+    public async Task<List<LearningTopicDto>> GetAllAsync()
     {
-        return await _repository.GetAllAsync();
+        var topics = await _repository.GetAllAsync();
+        return topics.Select(x => x.ToDto()).ToList();
     }
-    public async Task<LearningTopic> GetByIdAsync(int id)
+    public async Task<LearningTopicDto> GetByIdAsync(int id)
     {
         var topic = await GetTopicOrThrowAsync(id);
-        return topic;
+        return topic.ToDto();
     }
 
-    public async Task<LearningTopic> CreateAsync(CreateLearningTopicRequest request)
+    public async Task<LearningTopicDto> CreateAsync(CreateLearningTopicRequest request)
     {
         var topic = new LearningTopic{Title = request.Title, CreatedAtUtc = DateTime.UtcNow, Description = request.Description, IsCompleted = false};
         _repository.Add(topic);
         await _repository.SaveChangesAsync();
-        return topic;
+        return topic.ToDto();
     }
-    public async Task<LearningTopic> UpdateAsync(int id, UpdateLearningTopicRequest request)
+    public async Task<LearningTopicDto> UpdateAsync(int id, UpdateLearningTopicRequest request)
     {
         var topic = await GetTopicOrThrowAsync(id);
 
@@ -40,9 +41,9 @@ public class LearningTopicService : ILearningTopicService
 
         await _repository.SaveChangesAsync();
 
-        return topic;
+        return topic.ToDto();
     }
-    public async Task<LearningTopic> CompleteAsync(int id)
+    public async Task<LearningTopicDto> CompleteAsync(int id)
     {
         var topic = await GetTopicOrThrowAsync(id);
 
@@ -50,7 +51,7 @@ public class LearningTopicService : ILearningTopicService
 
         await _repository.SaveChangesAsync();
 
-        return topic;
+        return topic.ToDto();
     }
     public async Task DeleteAsync(int id)
     {

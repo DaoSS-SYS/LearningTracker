@@ -16,28 +16,28 @@ public class LearningTopicsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<LearningTopic>>> GetAll()
+    public async Task<ActionResult<List<LearningTopicDto>>> GetAll()
     {
         var topics = await _service.GetAllAsync();
         return Ok(topics);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<LearningTopic>> GetById(int id)
+    public async Task<ActionResult<LearningTopicDto>> GetById(int id)
     {
         var topic = await _service.GetByIdAsync(id);
         return Ok(topic);
     }
 
     [HttpPatch("{id:int}/complete")]
-    public async Task<ActionResult<LearningTopic>> Complete(int id)
+    public async Task<ActionResult<LearningTopicDto>> Complete(int id)
     {
         var topic = await _service.CompleteAsync(id);
         return Ok(topic);
     }
 
     [HttpPost]
-    public async Task<ActionResult<LearningTopic>> Create(
+    public async Task<ActionResult<LearningTopicDto>> Create(
     CreateLearningTopicRequest request)
     {
         var createdTopic = await _service.CreateAsync(request);
@@ -56,7 +56,7 @@ public class LearningTopicsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<LearningTopic>> Update(int id, UpdateLearningTopicRequest request)
+    public async Task<ActionResult<LearningTopicDto>> Update(int id, UpdateLearningTopicRequest request)
     {
         var topic = await _service.UpdateAsync(id, request);
         return Ok(topic);

@@ -5,10 +5,10 @@ namespace LearningTracker.Api.Services.Interfaces;
 
 public interface ILearningTopicService
 {
-    Task<List<LearningTopic>> GetAllAsync();
-    Task<LearningTopic> GetByIdAsync(int id);
-    Task<LearningTopic> CreateAsync(CreateLearningTopicRequest request);
-    Task<LearningTopic> UpdateAsync(int id, UpdateLearningTopicRequest request);
-    Task<LearningTopic> CompleteAsync(int id);
+    Task<List<LearningTopicDto>> GetAllAsync();
+    Task<LearningTopicDto> GetByIdAsync(int id);
+    Task<LearningTopicDto> CreateAsync(CreateLearningTopicRequest request);
+    Task<LearningTopicDto> UpdateAsync(int id, UpdateLearningTopicRequest request);
+    Task<LearningTopicDto> CompleteAsync(int id);
     Task DeleteAsync(int id);
 }
