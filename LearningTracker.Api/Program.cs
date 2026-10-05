@@ -21,6 +21,8 @@ builder.Services.AddDbContext<LearningTrackerDbContext>(options =>
 // Register DI 
 builder.Services.AddScoped<ILearningTopicRepository, LearningTopicRepository>();
 builder.Services.AddScoped<ILearningTopicService, LearningTopicService>();
+builder.Services.AddScoped<IStudySessionRepository, StudySessionRepository>();
+builder.Services.AddScoped<IStudySessionService, StudySessionService>();
 
 // Add services to the container.
 

@@ -69,5 +69,4 @@ public class LearningTopicService : ILearningTopicService
 
         return topic;
     }
-
 }

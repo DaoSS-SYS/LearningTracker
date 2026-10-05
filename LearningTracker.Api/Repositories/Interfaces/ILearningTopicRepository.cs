@@ -9,4 +9,5 @@ public interface ILearningTopicRepository
     void Add(LearningTopic topic);
     void Remove(LearningTopic topic);
     Task SaveChangesAsync();
+    Task<bool> ExistAsync(int id);
 }

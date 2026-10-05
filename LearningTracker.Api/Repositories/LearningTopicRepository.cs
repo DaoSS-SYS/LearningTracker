@@ -39,4 +39,8 @@ public class LearningTopicRepository : ILearningTopicRepository
     {
         await _context.SaveChangesAsync();
     }
+    public async Task<bool> ExistAsync(int id)
+    {
+        return await _context.LearningTopics.AnyAsync(x => x.Id == id);
+    }
 }
