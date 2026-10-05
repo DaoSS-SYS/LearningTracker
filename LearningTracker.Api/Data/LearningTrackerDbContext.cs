@@ -10,4 +10,5 @@ public class LearningTrackerDbContext : DbContext
 
     }
     public DbSet<LearningTopic> LearningTopics { get; set; }
+    public DbSet<StudySession> StudySessions { get; set; }
 }

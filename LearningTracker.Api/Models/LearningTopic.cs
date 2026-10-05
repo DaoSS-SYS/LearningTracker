@@ -7,4 +7,5 @@ public class LearningTopic
     public string? Description { get; set; }
     public bool IsCompleted { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+    public List<StudySession> StudySessions { get; set; } = new();
 }

@@ -3,6 +3,7 @@ using System;
 using LearningTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LearningTracker.Api.Data.Migrations
 {
     [DbContext(typeof(LearningTrackerDbContext))]
-    partial class LearningTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261005183856_AddStudySessions")]
+    partial class AddStudySessions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,7 +51,7 @@ namespace LearningTracker.Api.Data.Migrations
                     b.ToTable("LearningTopics");
                 });
 
-            modelBuilder.Entity("LearningTracker.Api.Models.StudySession", b =>
+            modelBuilder.Entity("LearningTracker.Api.Models.StudySessions", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +78,7 @@ namespace LearningTracker.Api.Data.Migrations
                     b.ToTable("StudySessions");
                 });
 
-            modelBuilder.Entity("LearningTracker.Api.Models.StudySession", b =>
+            modelBuilder.Entity("LearningTracker.Api.Models.StudySessions", b =>
                 {
                     b.HasOne("LearningTracker.Api.Models.LearningTopic", "LearningTopic")
                         .WithMany("StudySessions")

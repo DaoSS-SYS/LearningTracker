@@ -3,6 +3,7 @@ using System;
 using LearningTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LearningTracker.Api.Data.Migrations
 {
     [DbContext(typeof(LearningTrackerDbContext))]
-    partial class LearningTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261005184725_RenameStudySession")]
+    partial class RenameStudySession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

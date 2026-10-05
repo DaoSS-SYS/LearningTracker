@@ -12,7 +12,7 @@ public static class LearningTopicMapping
             Id = topic.Id,
             Title = topic.Title,
             Description = topic.Description,
-            //CreatedAtUtc = topic.CreatedAtUtc,
+            CreatedAtUtc = topic.CreatedAtUtc,
             IsCompleted = topic.IsCompleted
         };
     }
