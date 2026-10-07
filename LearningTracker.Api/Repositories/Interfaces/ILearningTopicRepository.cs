@@ -1,4 +1,5 @@
-﻿using LearningTracker.Api.Models;
+﻿using LearningTracker.Api.Dto;
+using LearningTracker.Api.Models;
 
 namespace LearningTracker.Api.Repositories.Interfaces;
 
@@ -10,4 +11,5 @@ public interface ILearningTopicRepository
     void Remove(LearningTopic topic);
     Task SaveChangesAsync();
     Task<bool> ExistAsync(int id);
+    Task<LearningTopicStatsDto?> GetTopicStatsAsync(int id);
 }

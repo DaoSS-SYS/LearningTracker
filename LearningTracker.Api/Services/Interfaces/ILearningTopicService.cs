@@ -11,4 +11,5 @@ public interface ILearningTopicService
     Task<LearningTopicDto> UpdateAsync(int id, UpdateLearningTopicRequest request);
     Task<LearningTopicDto> CompleteAsync(int id);
     Task DeleteAsync(int id);
+    Task<LearningTopicStatsDto> GetStatsAsync(int id);
 }

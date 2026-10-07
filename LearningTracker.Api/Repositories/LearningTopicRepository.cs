@@ -2,6 +2,8 @@
 using LearningTracker.Api.Repositories.Interfaces;
 using LearningTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using LearningTracker.Api.Mapping;
+using LearningTracker.Api.Dto;
 
 namespace LearningTracker.Api.Repositories;
 
@@ -43,4 +45,16 @@ public class LearningTopicRepository : ILearningTopicRepository
     {
         return await _context.LearningTopics.AnyAsync(x => x.Id == id);
     }
+    public async Task<LearningTopicStatsDto?> GetTopicStatsAsync(int id)
+    {
+        return await _context.LearningTopics.
+            Where(x => x.Id == id).
+            Select(s => new LearningTopicStatsDto { 
+                Id = s.Id, 
+                SessionsCount = s.StudySessions.Count,
+                Title = s.Title,
+                TotalMinutes = s.StudySessions.Sum(z => z.DurationMinutes)}).
+            FirstOrDefaultAsync();
+    }
+
 }

@@ -59,3 +59,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+// все что после builder.build - называется Middleware, дальше контейнеры вкладыванием друг в друга идут по цепочке в низ, и так же возвращают ответ

@@ -15,6 +15,13 @@ public class LearningTopicsController : ControllerBase
         _service = service;
     }
 
+    [HttpGet("{id:int}/stats")]
+    public async Task<ActionResult<LearningTopicStatsDto>> GetStats(int id)
+    {
+        var topicStats = await _service.GetStatsAsync(id);
+        return Ok(topicStats);
+    }
+
     [HttpGet]
     public async Task<ActionResult<List<LearningTopicDto>>> GetAll()
     {

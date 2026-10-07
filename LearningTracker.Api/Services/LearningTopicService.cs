@@ -69,4 +69,13 @@ public class LearningTopicService : ILearningTopicService
 
         return topic;
     }
+    public async Task<LearningTopicStatsDto> GetStatsAsync(int id)
+    {
+        var topic = await _repository.GetTopicStatsAsync(id);
+
+        if (topic is null)
+            throw new TopicNotFoundException(id);
+
+        return topic;
+    }
 }
