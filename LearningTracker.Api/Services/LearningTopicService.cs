@@ -1,5 +1,6 @@
 ﻿using LearningTracker.Api.Dto;
 using LearningTracker.Api.Exceptions;
+using LearningTracker.Api.Filters;
 using LearningTracker.Api.Mapping;
 using LearningTracker.Api.Models;
 using LearningTracker.Api.Repositories.Interfaces;
@@ -14,9 +15,9 @@ public class LearningTopicService : ILearningTopicService
     {
         _repository = repository;
     }
-    public async Task<List<LearningTopicDto>> GetAllAsync()
+    public async Task<List<LearningTopicDto>> GetAllAsync(LearningTopicsFilters filters)
     {
-        var topics = await _repository.GetAllAsync();
+        var topics = await _repository.GetAllAsync(filters);
         return topics.Select(x => x.ToDto()).ToList();
     }
     public async Task<LearningTopicDto> GetByIdAsync(int id)

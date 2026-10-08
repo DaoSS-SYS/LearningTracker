@@ -1,4 +1,5 @@
 ﻿using LearningTracker.Api.Dto;
+using LearningTracker.Api.Filters;
 using LearningTracker.Api.Models;
 using LearningTracker.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +21,6 @@ public class LearningTopicsController : ControllerBase
     {
         var topicStats = await _service.GetStatsAsync(id);
         return Ok(topicStats);
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<List<LearningTopicDto>>> GetAll()
-    {
-        var topics = await _service.GetAllAsync();
-        return Ok(topics);
     }
 
     [HttpGet("{id:int}")]
@@ -67,5 +61,12 @@ public class LearningTopicsController : ControllerBase
     {
         var topic = await _service.UpdateAsync(id, request);
         return Ok(topic);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<LearningTopicDto>>> GetAll([FromQuery]LearningTopicsFilters filters)
+    {
+        var topics = await _service.GetAllAsync(filters);
+        return Ok(topics);
     }
 }

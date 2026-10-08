@@ -1,9 +1,9 @@
-﻿using LearningTracker.Api.Models;
-using LearningTracker.Api.Repositories.Interfaces;
-using LearningTracker.Api.Data;
-using Microsoft.EntityFrameworkCore;
-using LearningTracker.Api.Mapping;
+﻿using LearningTracker.Api.Data;
 using LearningTracker.Api.Dto;
+using LearningTracker.Api.Filters;
+using LearningTracker.Api.Models;
+using LearningTracker.Api.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningTracker.Api.Repositories;
 
@@ -14,12 +14,25 @@ public class LearningTopicRepository : ILearningTopicRepository
     {
         _context = context;
     }
-    public async Task<List<LearningTopic>> GetAllAsync()
+    public async Task<List<LearningTopic>> GetAllAsync(LearningTopicsFilters filters)
     {
-        return await _context.LearningTopics.
+        IQueryable<LearningTopic> topics = _context.LearningTopics.
             AsNoTracking().
-            OrderByDescending(x => x.CreatedAtUtc).
-            ToListAsync();
+            OrderByDescending(x => x.CreatedAtUtc);   
+            
+        if(filters.IsCompleted.HasValue)
+        {
+            topics = topics.
+            Where(s => s.IsCompleted == filters.IsCompleted.Value);
+        }
+
+        if(!string.IsNullOrWhiteSpace(filters.Search))
+        {
+            topics = topics.Where(x => EF.Functions.ILike(x.Title, $"%{filters.Search}%"));
+        }
+
+        return await topics.ToListAsync();
+
     }
 
     public async Task<LearningTopic?> GetByIdAsync(int id)
