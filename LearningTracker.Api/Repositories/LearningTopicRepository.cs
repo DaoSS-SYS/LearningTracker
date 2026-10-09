@@ -14,12 +14,11 @@ public class LearningTopicRepository : ILearningTopicRepository
     {
         _context = context;
     }
-    public async Task<List<LearningTopic>> GetAllAsync(LearningTopicsFilters filters)
+    public async Task<(List<LearningTopic> Items, int TotalCount)> GetAllAsync(LearningTopicsFilters filters)
     {
         IQueryable<LearningTopic> topics = _context.LearningTopics.
-            AsNoTracking().
-            OrderByDescending(x => x.CreatedAtUtc);   
-            
+            AsNoTracking();
+
         if(filters.IsCompleted.HasValue)
         {
             topics = topics.
@@ -31,7 +30,16 @@ public class LearningTopicRepository : ILearningTopicRepository
             topics = topics.Where(x => EF.Functions.ILike(x.Title, $"%{filters.Search}%"));
         }
 
-        return await topics.ToListAsync();
+        var total = await topics.CountAsync();
+
+        var finalTopics = await topics.
+            OrderByDescending(x => x.CreatedAtUtc).ThenByDescending(x => x.Id).
+            Skip((filters.Page - 1) * filters.PageSize).
+            Take(filters.PageSize).
+            ToListAsync();
+
+
+        return (finalTopics, total);
 
     }
 

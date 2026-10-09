@@ -64,7 +64,7 @@ public class LearningTopicsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<LearningTopicDto>>> GetAll([FromQuery]LearningTopicsFilters filters)
+    public async Task<ActionResult<PagedResult<LearningTopicDto>>> GetAll([FromQuery]LearningTopicsFilters filters)
     {
         var topics = await _service.GetAllAsync(filters);
         return Ok(topics);

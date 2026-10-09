@@ -15,10 +15,19 @@ public class LearningTopicService : ILearningTopicService
     {
         _repository = repository;
     }
-    public async Task<List<LearningTopicDto>> GetAllAsync(LearningTopicsFilters filters)
+    public async Task<PagedResult<LearningTopicDto>> GetAllAsync(LearningTopicsFilters filters)
     {
-        var topics = await _repository.GetAllAsync(filters);
-        return topics.Select(x => x.ToDto()).ToList();
+        var result = await _repository.GetAllAsync(filters);
+        var topics = result.Items.Select(x => x.ToDto());
+        var pagedResult = new PagedResult<LearningTopicDto>
+        {
+            Page = filters.Page,
+            PageSize = filters.PageSize,
+            TotalCount = result.TotalCount,
+            Items = topics.ToList()
+        };
+
+        return pagedResult;
     }
     public async Task<LearningTopicDto> GetByIdAsync(int id)
     {
