@@ -13,6 +13,7 @@ namespace LearningTracker.Tests;
 public class FakeLearningTopicRepository : ILearningTopicRepository
 {
     private readonly List<LearningTopic> _topics = new List<LearningTopic>(); 
+    public IReadOnlyList<LearningTopic> Topics { get { return _topics; } }
     public async Task<(List<LearningTopic> Items, int TotalCount)> GetAllAsync(LearningTopicsFilters filters)
     {
         throw new NotImplementedException();
@@ -25,7 +26,7 @@ public class FakeLearningTopicRepository : ILearningTopicRepository
 
     public void Add(LearningTopic topic)
     {
-        throw new NotImplementedException();
+        _topics.Add(topic);
     }
 
     public void Remove(LearningTopic topic)
@@ -33,9 +34,9 @@ public class FakeLearningTopicRepository : ILearningTopicRepository
         throw new NotImplementedException();
     }
 
-    public async Task SaveChangesAsync()
+    public Task SaveChangesAsync()
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
     public async Task<bool> ExistAsync(int id)
     {
