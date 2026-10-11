@@ -1,12 +1,7 @@
-﻿using LearningTracker.Api.Data;
-using LearningTracker.Api.Dto;
+﻿using LearningTracker.Api.Dto;
 using LearningTracker.Api.Filters;
 using LearningTracker.Api.Models;
 using LearningTracker.Api.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LearningTracker.Tests;
 
@@ -43,6 +38,10 @@ public class FakeLearningTopicRepository : ILearningTopicRepository
         throw new NotImplementedException();
     }
     public async Task<LearningTopicStatsDto?> GetTopicStatsAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+    public async Task<LearningTopic?> GetTopicDetailsAsync(int id)
     {
         throw new NotImplementedException();
     }

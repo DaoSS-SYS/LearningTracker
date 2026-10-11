@@ -13,4 +13,5 @@ public interface ILearningTopicRepository
     Task SaveChangesAsync();
     Task<bool> ExistAsync(int id);
     Task<LearningTopicStatsDto?> GetTopicStatsAsync(int id);
+    Task<LearningTopic?> GetTopicDetailsAsync(int id);
 }

@@ -77,5 +77,14 @@ public class LearningTopicRepository : ILearningTopicRepository
                 TotalMinutes = s.StudySessions.Sum(z => z.DurationMinutes)}).
             FirstOrDefaultAsync();
     }
+    public async Task<LearningTopic?> GetTopicDetailsAsync(int id)
+    {
+        return await _context.LearningTopics.
+            Where(x => x.Id == id).
+            Include(c => c.StudySessions).
+            AsNoTracking().
+            FirstOrDefaultAsync();
+    }
+
 
 }

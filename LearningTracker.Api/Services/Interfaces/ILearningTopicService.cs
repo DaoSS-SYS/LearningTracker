@@ -12,4 +12,5 @@ public interface ILearningTopicService
     Task<LearningTopicDto> CompleteAsync(int id);
     Task DeleteAsync(int id);
     Task<LearningTopicStatsDto> GetStatsAsync(int id);
+    Task<LearningTopicDetailsDto> GetDetailsAsync(int id);
 }

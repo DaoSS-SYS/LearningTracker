@@ -69,4 +69,11 @@ public class LearningTopicsController : ControllerBase
         var topics = await _service.GetAllAsync(filters);
         return Ok(topics);
     }
+
+    [HttpGet("{id:int}/details")]
+    public async Task<ActionResult<LearningTopicDetailsDto>> GetDetails(int id)
+    {
+        var topicDetails = await _service.GetDetailsAsync(id);
+        return Ok(topicDetails);
+    }
 }
