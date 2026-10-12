@@ -29,15 +29,16 @@ builder.Services.AddScoped<IStudySessionService, StudySessionService>();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-// Register handler to notfound
+// Register handler to notfound and topicHasSessions
 builder.Services.AddExceptionHandler<TopicNotFoundExceptionHandler>();
+builder.Services.AddExceptionHandler<TopicHasSessionsExceptionHandler>();
 // To global own answer to problems
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
 // To catch global problems
-app.UseExceptionHandler();
+app.UseExceptionHandler(); // работает как обертка для всего, что ниже. Все ошибки которые будут внизу - пролетят выше через него и он их поймает.
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

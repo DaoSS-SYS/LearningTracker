@@ -80,7 +80,7 @@ namespace LearningTracker.Api.Data.Migrations
                     b.HasOne("LearningTracker.Api.Models.LearningTopic", "LearningTopic")
                         .WithMany("StudySessions")
                         .HasForeignKey("LearningTopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LearningTopic");

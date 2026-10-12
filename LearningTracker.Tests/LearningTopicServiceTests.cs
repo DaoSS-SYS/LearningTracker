@@ -11,7 +11,7 @@ public class LearningTopicServiceTests
     public async Task GetByIdAsync_TopicNotFound_ThrowsNotFoundException()
     {
         // Arrange: подготовить (фейковый репозиторий, сервис)
-        var service = new LearningTopicService(new FakeLearningTopicRepository());
+        var service = new LearningTopicService(new FakeLearningTopicRepository(), new FakeStudySessionsRepository());
 
         // Act + Assert: выполнить и проверить, что бросилось нужное исключение
         await Assert.ThrowsAsync<TopicNotFoundException>(() => service.GetByIdAsync(10));
@@ -21,31 +21,66 @@ public class LearningTopicServiceTests
     public async Task CreateAsync_ValidRequest_ReturnsTopicNotCompleted()
     {
         // Arrange
-        var fake = new FakeLearningTopicRepository();
-        var service = new LearningTopicService(fake);
+        var fakeTopicRep = new FakeLearningTopicRepository();
+        var fakeSessionsRep = new FakeStudySessionsRepository();
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep);
 
         // Act + Assert
         var topic = await service.CreateAsync(new CreateLearningTopicRequest { Title = "EF" });
 
         Assert.Equal("EF", topic.Title);
         Assert.False(topic.IsCompleted);
-        Assert.Single(fake.Topics);
+        Assert.Single(fakeTopicRep.Topics);
     }
 
     [Fact]
     public async Task CompleteAsync_ValidRequest_ReturnsTopicCompleted()
     {
         // Arrange
-        var fake = new FakeLearningTopicRepository();
-        var service = new LearningTopicService(fake);
+        var fakeTopicRep = new FakeLearningTopicRepository();
+        var fakeSessionsRep = new FakeStudySessionsRepository();
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep);
 
         // Act + Assert
-        fake.Add(new LearningTopic { Id = 2, Title = "TestComplete", IsCompleted = false});
+        fakeTopicRep.Add(new LearningTopic { Id = 2, Title = "TestComplete", IsCompleted = false});
 
         var topic = await service.CompleteAsync(2);
 
-        Assert.True(fake.Topics.First(x => x.Id == 2).IsCompleted);
+        Assert.True(fakeTopicRep.Topics.First(x => x.Id == 2).IsCompleted);
         Assert.True(topic.IsCompleted);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_TopicHasSessions_ThrowsTopicHasSessionsException()
+    {
+        // Arrange
+        var fakeTopicRep = new FakeLearningTopicRepository();
+        var fakeSessionsRep = new FakeStudySessionsRepository();
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep);
+
+        // Act + Assert
+        fakeTopicRep.Add(new LearningTopic { Id = 2, Title = "Test" });
+        fakeSessionsRep.Add(new StudySession { Id = 1, LearningTopicId = 2 });
+
+        await Assert.ThrowsAsync<TopicHasSessionsException>(() => service.DeleteAsync(2));
+        Assert.Contains(fakeTopicRep.Topics, x => x.Id == 2);
+
+    }
+
+    [Fact]
+    public async Task DeleteAsync_TopicWithoutSessions_RemovesTopic()
+    {
+        // Arrange
+        var fakeTopicRep = new FakeLearningTopicRepository();
+        var fakeSessionsRep = new FakeStudySessionsRepository();
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep);
+
+        // Act + Assert
+        fakeTopicRep.Add(new LearningTopic { Id = 3, Title = "Test" });
+
+        await service.DeleteAsync(3);
+
+        Assert.DoesNotContain(fakeTopicRep.Topics, x => x.Id == 3);
     }
 
 }
