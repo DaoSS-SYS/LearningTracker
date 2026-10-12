@@ -1,5 +1,6 @@
 ﻿using LearningTracker.Api.Dto;
 using LearningTracker.Api.Exceptions;
+using LearningTracker.Api.Models;
 using LearningTracker.Api.Services;
 
 namespace LearningTracker.Tests;
@@ -14,8 +15,6 @@ public class LearningTopicServiceTests
 
         // Act + Assert: выполнить и проверить, что бросилось нужное исключение
         await Assert.ThrowsAsync<TopicNotFoundException>(() => service.GetByIdAsync(10));
-
-
     }
 
     [Fact]
@@ -31,11 +30,22 @@ public class LearningTopicServiceTests
         Assert.Equal("EF", topic.Title);
         Assert.False(topic.IsCompleted);
         Assert.Single(fake.Topics);
+    }
 
+    [Fact]
+    public async Task CompleteAsync_ValidRequest_ReturnsTopicCompleted()
+    {
+        // Arrange
+        var fake = new FakeLearningTopicRepository();
+        var service = new LearningTopicService(fake);
 
+        // Act + Assert
+        fake.Add(new LearningTopic { Id = 2, Title = "TestComplete", IsCompleted = false});
 
+        var topic = await service.CompleteAsync(2);
 
-
+        Assert.True(fake.Topics.First(x => x.Id == 2).IsCompleted);
+        Assert.True(topic.IsCompleted);
     }
 
 }
