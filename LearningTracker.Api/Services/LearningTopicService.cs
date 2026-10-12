@@ -11,9 +11,12 @@ namespace LearningTracker.Api.Services;
 public class LearningTopicService : ILearningTopicService
 {
     private readonly ILearningTopicRepository _repository;
-    public LearningTopicService(ILearningTopicRepository repository)
+    private readonly IStudySessionRepository _repositorySessions;
+
+    public LearningTopicService(ILearningTopicRepository repository, IStudySessionRepository repositorySessions)
     {
         _repository = repository;
+        _repositorySessions = repositorySessions;
     }
     public async Task<PagedResult<LearningTopicDto>> GetAllAsync(LearningTopicsFilters filters)
     {
@@ -66,6 +69,9 @@ public class LearningTopicService : ILearningTopicService
     public async Task DeleteAsync(int id)
     {
         var topic = await GetTopicOrThrowAsync(id);
+
+        if(await _repositorySessions.HasSessionsAsync(id))
+            throw new TopicHasSessionsException(id);
 
         _repository.Remove(topic);
 

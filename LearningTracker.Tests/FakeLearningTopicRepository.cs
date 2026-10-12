@@ -26,7 +26,7 @@ public class FakeLearningTopicRepository : ILearningTopicRepository
 
     public void Remove(LearningTopic topic)
     {
-        throw new NotImplementedException();
+        _topics.Remove(topic);
     }
 
     public Task SaveChangesAsync()

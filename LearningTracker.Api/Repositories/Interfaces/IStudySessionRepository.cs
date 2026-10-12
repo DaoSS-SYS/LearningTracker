@@ -7,4 +7,5 @@ public interface IStudySessionRepository
     Task<List<StudySession>> GetSessionsAsync(int id);
     void Add(StudySession studySession);
     Task SaveChangesAsync();
+    Task<bool> HasSessionsAsync(int id);
 }

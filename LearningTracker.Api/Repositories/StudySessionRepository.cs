@@ -28,4 +28,8 @@ public class StudySessionRepository : IStudySessionRepository
     {
         await _context.SaveChangesAsync();
     }
+    public async Task<bool> HasSessionsAsync(int id)
+    {
+        return await _context.StudySessions.AnyAsync(x => x.LearningTopicId == id);
+    }
 }
