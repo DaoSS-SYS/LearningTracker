@@ -1,13 +1,24 @@
 using LearningTracker.Api.Data;
-using Microsoft.EntityFrameworkCore;
+using LearningTracker.Api.Handlers;
 using LearningTracker.Api.Repositories;
 using LearningTracker.Api.Repositories.Interfaces;
 using LearningTracker.Api.Services;
 using LearningTracker.Api.Services.Interfaces;
-using LearningTracker.Api.Handlers;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Writing logs to console and file(everyday)
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration
+        .WriteTo.Console()
+        .WriteTo.File("logs/app-.txt", rollingInterval: RollingInterval.Day)
+        .MinimumLevel
+        .Override("Microsoft.AspNetCore", LogEventLevel.Warning);
+});
 // Get connection lines
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
