@@ -2,6 +2,7 @@
 using LearningTracker.Api.Exceptions;
 using LearningTracker.Api.Models;
 using LearningTracker.Api.Services;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace LearningTracker.Tests;
 
@@ -11,7 +12,7 @@ public class LearningTopicServiceTests
     public async Task GetByIdAsync_TopicNotFound_ThrowsNotFoundException()
     {
         // Arrange: подготовить (фейковый репозиторий, сервис)
-        var service = new LearningTopicService(new FakeLearningTopicRepository(), new FakeStudySessionsRepository());
+        var service = new LearningTopicService(new FakeLearningTopicRepository(), new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance);
 
         // Act + Assert: выполнить и проверить, что бросилось нужное исключение
         await Assert.ThrowsAsync<TopicNotFoundException>(() => service.GetByIdAsync(10));
@@ -23,7 +24,7 @@ public class LearningTopicServiceTests
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
         var fakeSessionsRep = new FakeStudySessionsRepository();
-        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep);
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance);
 
         // Act + Assert
         var topic = await service.CreateAsync(new CreateLearningTopicRequest { Title = "EF" });
@@ -39,7 +40,7 @@ public class LearningTopicServiceTests
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
         var fakeSessionsRep = new FakeStudySessionsRepository();
-        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep);
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance);
 
         // Act + Assert
         fakeTopicRep.Add(new LearningTopic { Id = 2, Title = "TestComplete", IsCompleted = false});
@@ -56,7 +57,7 @@ public class LearningTopicServiceTests
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
         var fakeSessionsRep = new FakeStudySessionsRepository();
-        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep);
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance);
 
         // Act + Assert
         fakeTopicRep.Add(new LearningTopic { Id = 2, Title = "Test" });
@@ -73,7 +74,7 @@ public class LearningTopicServiceTests
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
         var fakeSessionsRep = new FakeStudySessionsRepository();
-        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep);
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance);
 
         // Act + Assert
         fakeTopicRep.Add(new LearningTopic { Id = 3, Title = "Test" });

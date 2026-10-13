@@ -12,11 +12,14 @@ public class LearningTopicService : ILearningTopicService
 {
     private readonly ILearningTopicRepository _repository;
     private readonly IStudySessionRepository _repositorySessions;
+    private readonly ILogger<LearningTopicService> _logger;
 
-    public LearningTopicService(ILearningTopicRepository repository, IStudySessionRepository repositorySessions)
+
+    public LearningTopicService(ILearningTopicRepository repository, IStudySessionRepository repositorySessions, ILogger<LearningTopicService> logger)
     {
         _repository = repository;
         _repositorySessions = repositorySessions;
+        _logger = logger;
     }
     public async Task<PagedResult<LearningTopicDto>> GetAllAsync(LearningTopicsFilters filters)
     {
@@ -43,6 +46,7 @@ public class LearningTopicService : ILearningTopicService
         var topic = new LearningTopic{Title = request.Title, CreatedAtUtc = DateTime.UtcNow, Description = request.Description, IsCompleted = false};
         _repository.Add(topic);
         await _repository.SaveChangesAsync();
+        _logger.LogInformation("Topic {TopicId} created", topic.Id);
         return topic.ToDto();
     }
     public async Task<LearningTopicDto> UpdateAsync(int id, UpdateLearningTopicRequest request)
@@ -71,11 +75,16 @@ public class LearningTopicService : ILearningTopicService
         var topic = await GetTopicOrThrowAsync(id);
 
         if(await _repositorySessions.HasSessionsAsync(id))
+        {
+            _logger.LogWarning("Topic {TopicId} cannot be deleted: it has sessions", topic.Id);
             throw new TopicHasSessionsException(id);
-
+        }
+            
         _repository.Remove(topic);
 
         await _repository.SaveChangesAsync();
+
+        _logger.LogInformation("Topic {TopicId} was deleted", topic.Id);
     }
     private async Task<LearningTopic> GetTopicOrThrowAsync(int id)
     {
