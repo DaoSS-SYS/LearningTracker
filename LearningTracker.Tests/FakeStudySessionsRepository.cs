@@ -10,7 +10,7 @@ public class FakeStudySessionsRepository : IStudySessionRepository
     
     public async Task<List<StudySession>> GetSessionsAsync(int id)
     {
-        throw new NotImplementedException();
+        return _sessions.Where(x => x.LearningTopicId == id).ToList();
     }
     public void Add(StudySession studySession)
     {

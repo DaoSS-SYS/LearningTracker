@@ -33,9 +33,9 @@ public class FakeLearningTopicRepository : ILearningTopicRepository
     {
         return Task.CompletedTask;
     }
-    public async Task<bool> ExistAsync(int id)
+    public Task<bool> ExistAsync(int id)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(_topics.Any(x => x.Id == id));
     }
     public async Task<LearningTopicStatsDto?> GetTopicStatsAsync(int id)
     {
