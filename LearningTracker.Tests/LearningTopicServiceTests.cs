@@ -84,4 +84,39 @@ public class LearningTopicServiceTests
         Assert.DoesNotContain(fakeTopicRep.Topics, x => x.Id == 3);
     }
 
+    [Fact]
+    public async Task UpdateAsync_TopicExists_UpdatesFields()
+    {
+        // Arrange
+        var fakeTopicRep = new FakeLearningTopicRepository();
+        var service = new LearningTopicService(fakeTopicRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance);
+
+        fakeTopicRep.Add(new LearningTopic { Id = 1, Title = "Old" });
+
+        // Act
+        var newTopicCheck = await service.UpdateAsync(1, new UpdateLearningTopicRequest { Title = "New", Description = "newDesc"});
+
+        var topicCheck = Assert.Single(fakeTopicRep.Topics);
+
+        // Assert
+        Assert.Equal("New", topicCheck.Title);
+        Assert.Equal("newDesc", topicCheck.Description);
+
+        Assert.Equal("New", newTopicCheck.Title);
+        Assert.Equal("newDesc", newTopicCheck.Description);
+
+        Assert.NotEqual("Old", topicCheck.Title);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_TopicNotFound_ThrowsNotFoundException()
+    {
+        // Arrange
+        var fakeTopicRep = new FakeLearningTopicRepository();
+        var service = new LearningTopicService(fakeTopicRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance);
+
+        // Act + Assert
+        await Assert.ThrowsAsync<TopicNotFoundException>(() => service.UpdateAsync(1, new UpdateLearningTopicRequest { Title = "test"}));
+    }
+
 }
