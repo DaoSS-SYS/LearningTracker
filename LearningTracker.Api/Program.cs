@@ -34,6 +34,8 @@ builder.Services.AddScoped<ILearningTopicRepository, LearningTopicRepository>();
 builder.Services.AddScoped<ILearningTopicService, LearningTopicService>();
 builder.Services.AddScoped<IStudySessionRepository, StudySessionRepository>();
 builder.Services.AddScoped<IStudySessionService, StudySessionService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Add services to the container.
 
@@ -43,6 +45,7 @@ builder.Services.AddOpenApi();
 // Register handler to notfound and topicHasSessions
 builder.Services.AddExceptionHandler<TopicNotFoundExceptionHandler>();
 builder.Services.AddExceptionHandler<TopicHasSessionsExceptionHandler>();
+builder.Services.AddExceptionHandler<UserAlreadyExistsHandler>();
 // To global own answer to problems
 builder.Services.AddProblemDetails();
 
