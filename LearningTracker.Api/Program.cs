@@ -43,6 +43,7 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 // Register handler to notfound and topicHasSessions
+builder.Services.AddExceptionHandler<InvalidCredentialsHandler>();
 builder.Services.AddExceptionHandler<TopicNotFoundExceptionHandler>();
 builder.Services.AddExceptionHandler<TopicHasSessionsExceptionHandler>();
 builder.Services.AddExceptionHandler<UserAlreadyExistsHandler>();

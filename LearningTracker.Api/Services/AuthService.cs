@@ -41,6 +41,20 @@ public class AuthService : IAuthService
         return user.ToDto();
     }
 
+    public async Task<LoginResponse> LoginAsync(LoginRequest request)
+    {
+        var user = await _repository.GetUserByEmailAsync(request.Email.ToLower().Trim());
+        var hasher = new PasswordHasher<User>();
+
+        if (user is null)
+            throw new InvalidCredentialsException();
+
+        if(hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
+            throw new InvalidCredentialsException();
+
+        return new LoginResponse { Token = "testToken" };
+    }
+
     private async Task ThrowExceptionIfUserExists(string email)
     {
         var user = await _repository.GetUserByEmailAsync(email);
