@@ -14,7 +14,7 @@ public class AuthServiceTests
     {
         // Arrange: подготовить (фейковый репозиторий, сервис)
         var userRepository = new FakeUserRepository();
-        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance);
+        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance, new FakeJwtTokenService());
 
         // Act + Assert: выполнить и проверить, что бросилось нужное исключение
         userRepository.Add(new User {Email = "test@mail.ru"});
@@ -26,7 +26,7 @@ public class AuthServiceTests
     {
         // Arrange: подготовить (фейковый репозиторий, сервис)
         var userRepository = new FakeUserRepository();
-        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance);
+        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance, new FakeJwtTokenService());
 
         // Act + Assert: выполнить и проверить, что бросилось нужное исключение
         await service.CreateAsync(new RegisterRequest { Email = "test@mail.ru", Password = "testtest" });
@@ -47,7 +47,7 @@ public class AuthServiceTests
     {
         // Arrange: подготовить (фейковый репозиторий, сервис)
         var userRepository = new FakeUserRepository();
-        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance);
+        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance, new FakeJwtTokenService());
 
         // Act + Assert: выполнить и проверить, что бросилось нужное исключение
         userRepository.AddWithHash("test@mail.ru", "testtest");
@@ -60,7 +60,7 @@ public class AuthServiceTests
     {
         // Arrange: подготовить (фейковый репозиторий, сервис)
         var userRepository = new FakeUserRepository();
-        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance);
+        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance, new FakeJwtTokenService());
 
         // Act + Assert: выполнить и проверить, что бросилось нужное исключение
         userRepository.AddWithHash("test@mail.ru", "testtest");
@@ -73,12 +73,12 @@ public class AuthServiceTests
     {
         // Arrange: подготовить (фейковый репозиторий, сервис)
         var userRepository = new FakeUserRepository();
-        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance);
+        var service = new AuthService(userRepository, NullLogger<AuthService>.Instance, new FakeJwtTokenService());
 
         // Act + Assert: выполнить и проверить, что бросилось нужное исключение
         userRepository.AddWithHash("test@mail.ru", "testtest");
 
         var token = await service.LoginAsync(new LoginRequest { Email = "test@mail.ru", Password = "testtest" });
-        Assert.NotEmpty(token.Token);
+        Assert.Equal("test-token", token.Token);
     }
 }
