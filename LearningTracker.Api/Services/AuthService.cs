@@ -11,12 +11,14 @@ namespace LearningTracker.Api.Services;
 public class AuthService : IAuthService
 {
     private readonly IUserRepository _repository;
+    private readonly IJwtTokenService _jwtTokenService;
     private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IUserRepository repository, ILogger<AuthService> logger)
+    public AuthService(IUserRepository repository, ILogger<AuthService> logger, IJwtTokenService jwtTokenService)
     {
         _repository = repository;
         _logger = logger;
+        _jwtTokenService = jwtTokenService;
     }
     public async Task<UserDto> CreateAsync(RegisterRequest request)
     {
@@ -52,7 +54,7 @@ public class AuthService : IAuthService
         if(hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
             throw new InvalidCredentialsException();
 
-        return new LoginResponse { Token = "testToken" };
+        return new LoginResponse { Token = _jwtTokenService.CreateToken(user)};
     }
 
     private async Task ThrowExceptionIfUserExists(string email)

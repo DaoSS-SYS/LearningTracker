@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
         return StatusCode(StatusCodes.Status201Created, user);
     }
 
-    [HttpPost("auth")]
+    [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
     {
         var loginResponse = await _service.LoginAsync(request);
