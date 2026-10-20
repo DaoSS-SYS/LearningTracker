@@ -5,8 +5,11 @@ using LearningTracker.Api.Repositories.Interfaces;
 using LearningTracker.Api.Services;
 using LearningTracker.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using Serilog.Events;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +54,26 @@ builder.Services.AddExceptionHandler<UserAlreadyExistsHandler>();
 // To global own answer to problems
 builder.Services.AddProblemDetails();
 
+/*var configuration = new ConfigurationBuilder() // чтобы брать значения из appsettings
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .Build();*/
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // для подключения JwtToken
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Настройка Jwt:Key не задана"))),
+        };
+    });
+
 var app = builder.Build();
 
 // To catch global problems
@@ -70,6 +93,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication(); // для проверки токена
 
 app.UseAuthorization();
 

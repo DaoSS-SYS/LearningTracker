@@ -1,13 +1,14 @@
 ﻿using LearningTracker.Api.Dto;
 using LearningTracker.Api.Filters;
-using LearningTracker.Api.Models;
 using LearningTracker.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningTracker.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class LearningTopicsController : ControllerBase
 {
     private readonly ILearningTopicService _service;
@@ -50,6 +51,7 @@ public class LearningTopicsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         await _service.DeleteAsync(id);
