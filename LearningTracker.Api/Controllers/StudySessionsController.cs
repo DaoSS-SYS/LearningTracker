@@ -1,12 +1,14 @@
 ﻿using LearningTracker.Api.Dto;
 using LearningTracker.Api.Models;
 using LearningTracker.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningTracker.Api.Controllers;
 
 [ApiController]
 [Route("api/")]
+[Authorize]
 public class StudySessionsController : ControllerBase
 {
     private readonly IStudySessionService _service;
