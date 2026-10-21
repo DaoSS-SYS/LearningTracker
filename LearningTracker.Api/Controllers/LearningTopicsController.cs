@@ -39,8 +39,7 @@ public class LearningTopicsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<LearningTopicDto>> Create(
-    CreateLearningTopicRequest request)
+    public async Task<ActionResult<LearningTopicDto>> Create(CreateLearningTopicRequest request)
     {
         var createdTopic = await _service.CreateAsync(request);
 

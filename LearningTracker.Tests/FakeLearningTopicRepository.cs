@@ -45,4 +45,9 @@ public class FakeLearningTopicRepository : ILearningTopicRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task<bool> AnyTopicsInCategoryAsync(int categoryId)
+    {
+        return await Task.FromResult(_topics.Any(y => y.CategoryId == categoryId));
+    }
 }

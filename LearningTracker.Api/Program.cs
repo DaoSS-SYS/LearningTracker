@@ -40,6 +40,8 @@ builder.Services.AddScoped<IStudySessionService, StudySessionService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // Add services to the container.
 
@@ -51,6 +53,9 @@ builder.Services.AddExceptionHandler<InvalidCredentialsHandler>();
 builder.Services.AddExceptionHandler<TopicNotFoundExceptionHandler>();
 builder.Services.AddExceptionHandler<TopicHasSessionsExceptionHandler>();
 builder.Services.AddExceptionHandler<UserAlreadyExistsHandler>();
+builder.Services.AddExceptionHandler<CategoryHasTopicsHandler>();
+builder.Services.AddExceptionHandler<CategoryNotFoundHandler>();
+builder.Services.AddExceptionHandler<CategoryNameIsBusyHandler>();
 // To global own answer to problems
 builder.Services.AddProblemDetails();
 

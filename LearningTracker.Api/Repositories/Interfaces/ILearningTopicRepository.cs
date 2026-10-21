@@ -14,4 +14,5 @@ public interface ILearningTopicRepository
     Task<bool> ExistAsync(int id);
     Task<LearningTopicStatsDto?> GetTopicStatsAsync(int id);
     Task<LearningTopic?> GetTopicDetailsAsync(int id);
+    Task<bool> AnyTopicsInCategoryAsync(int categoryId);
 }

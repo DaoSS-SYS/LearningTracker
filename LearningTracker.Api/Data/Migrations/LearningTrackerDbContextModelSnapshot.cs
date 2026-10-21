@@ -22,6 +22,34 @@ namespace LearningTracker.Api.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("LearningTracker.Api.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique();
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("LearningTracker.Api.Models.LearningTopic", b =>
                 {
                     b.Property<int>("Id")
@@ -29,6 +57,9 @@ namespace LearningTracker.Api.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -44,6 +75,8 @@ namespace LearningTracker.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("LearningTopics");
                 });
@@ -106,6 +139,16 @@ namespace LearningTracker.Api.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("LearningTracker.Api.Models.LearningTopic", b =>
+                {
+                    b.HasOne("LearningTracker.Api.Models.Category", "Category")
+                        .WithMany("LearningTopics")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("LearningTracker.Api.Models.StudySession", b =>
                 {
                     b.HasOne("LearningTracker.Api.Models.LearningTopic", "LearningTopic")
@@ -115,6 +158,11 @@ namespace LearningTracker.Api.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("LearningTopic");
+                });
+
+            modelBuilder.Entity("LearningTracker.Api.Models.Category", b =>
+                {
+                    b.Navigation("LearningTopics");
                 });
 
             modelBuilder.Entity("LearningTracker.Api.Models.LearningTopic", b =>
