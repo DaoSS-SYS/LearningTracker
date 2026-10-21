@@ -86,5 +86,9 @@ public class LearningTopicRepository : ILearningTopicRepository
             FirstOrDefaultAsync();
     }
 
+    public async Task<bool> AnyTopicsInCategoryAsync(int categoryId)
+    {
+        return await _context.LearningTopics.AnyAsync(x => x.CategoryId == categoryId);
+    }
 
 }
