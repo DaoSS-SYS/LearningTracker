@@ -1,5 +1,7 @@
 # LearningTracker
 
+[![CI](https://github.com/DaoSS-SYS/LearningTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/DaoSS-SYS/LearningTracker/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Учебный backend-проект на **C# / ASP.NET Core Web API**: трекер изучаемых тем и учебных сессий.
 Написан самостоятельно, без ИИ-агентов — чтобы руками отработать основы backend-разработки.
 
@@ -89,3 +91,7 @@ dotnet test
 Проверяются правила сервиса тем: ошибка для несуществующей темы, создание темы,
 завершение темы, запрет удаления темы с сессиями и удаление темы без сессий.
 Также есть тесты для `PagedResult`.
+
+## Лицензия
+
+MIT, см. [LICENSE](LICENSE).
