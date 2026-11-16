@@ -10,5 +10,6 @@ public class CreateLearningTopicRequest
 
     [StringLength(100)]
     public string? Description { get; set; }
+    public int? CategoryId { get; set; }
 
 }

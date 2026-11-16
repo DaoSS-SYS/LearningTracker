@@ -12,14 +12,16 @@ public class LearningTopicService : ILearningTopicService
 {
     private readonly ILearningTopicRepository _repository;
     private readonly IStudySessionRepository _repositorySessions;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly ILogger<LearningTopicService> _logger;
 
 
-    public LearningTopicService(ILearningTopicRepository repository, IStudySessionRepository repositorySessions, ILogger<LearningTopicService> logger)
+    public LearningTopicService(ILearningTopicRepository repository, IStudySessionRepository repositorySessions, ILogger<LearningTopicService> logger, ICategoryRepository categoryRepository)
     {
         _repository = repository;
         _repositorySessions = repositorySessions;
         _logger = logger;
+        _categoryRepository = categoryRepository;
     }
     public async Task<PagedResult<LearningTopicDto>> GetAllAsync(LearningTopicsFilters filters)
     {
@@ -43,7 +45,10 @@ public class LearningTopicService : ILearningTopicService
 
     public async Task<LearningTopicDto> CreateAsync(CreateLearningTopicRequest request)
     {
-        var topic = new LearningTopic{Title = request.Title, CreatedAtUtc = DateTime.UtcNow, Description = request.Description, IsCompleted = false};
+        if (request.CategoryId is int categoryId)
+            await GetCategoryOrThrowAsync(categoryId);
+        
+        var topic = new LearningTopic{Title = request.Title, CreatedAtUtc = DateTime.UtcNow, Description = request.Description, IsCompleted = false, CategoryId = request.CategoryId};
         _repository.Add(topic);
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Topic {TopicId} created", topic.Id);
@@ -53,8 +58,13 @@ public class LearningTopicService : ILearningTopicService
     {
         var topic = await GetTopicOrThrowAsync(id);
 
+        if (request.CategoryId != topic.CategoryId && request.CategoryId is int categoryId)
+            await GetCategoryOrThrowAsync(categoryId);
+
+        topic.CategoryId = request.CategoryId;
         topic.Title = request.Title;
         topic.Description = request.Description;
+
 
         await _repository.SaveChangesAsync();
 
@@ -86,14 +96,7 @@ public class LearningTopicService : ILearningTopicService
 
         _logger.LogInformation("Topic {TopicId} was deleted", topic.Id);
     }
-    private async Task<LearningTopic> GetTopicOrThrowAsync(int id)
-    {
-        var topic = await _repository.GetByIdAsync(id);
-        if(topic is null)
-            throw new TopicNotFoundException(id);
-
-        return topic;
-    }
+    
     public async Task<LearningTopicStatsDto> GetStatsAsync(int id)
     {
         var topic = await _repository.GetTopicStatsAsync(id);
@@ -112,5 +115,18 @@ public class LearningTopicService : ILearningTopicService
 
         return topic.ToDetailsDto();
     }
+    private async Task<LearningTopic> GetTopicOrThrowAsync(int id)
+    {
+        var topic = await _repository.GetByIdAsync(id);
+        if (topic is null)
+            throw new TopicNotFoundException(id);
 
+        return topic;
+    }
+    private async Task GetCategoryOrThrowAsync(int id)
+    {
+        var category = await _categoryRepository.GetCategoryByIdAsync(id);
+        if(category is null)
+            throw new CategoryNotFoundException(id);
+    }
 }
