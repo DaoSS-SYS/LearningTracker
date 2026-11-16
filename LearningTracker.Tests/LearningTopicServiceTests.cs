@@ -12,7 +12,7 @@ public class LearningTopicServiceTests
     public async Task GetByIdAsync_TopicNotFound_ThrowsNotFoundException()
     {
         // Arrange: подготовить (фейковый репозиторий, сервис)
-        var service = new LearningTopicService(new FakeLearningTopicRepository(), new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance);
+        var service = new LearningTopicService(new FakeLearningTopicRepository(), new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
 
         // Act + Assert: выполнить и проверить, что бросилось нужное исключение
         await Assert.ThrowsAsync<TopicNotFoundException>(() => service.GetByIdAsync(10));
@@ -24,7 +24,7 @@ public class LearningTopicServiceTests
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
         var fakeSessionsRep = new FakeStudySessionsRepository();
-        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance);
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
 
         // Act + Assert
         var topic = await service.CreateAsync(new CreateLearningTopicRequest { Title = "EF" });
@@ -40,7 +40,7 @@ public class LearningTopicServiceTests
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
         var fakeSessionsRep = new FakeStudySessionsRepository();
-        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance);
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
 
         // Act + Assert
         fakeTopicRep.Add(new LearningTopic { Id = 2, Title = "TestComplete", IsCompleted = false});
@@ -49,6 +49,7 @@ public class LearningTopicServiceTests
 
         Assert.True(fakeTopicRep.Topics.First(x => x.Id == 2).IsCompleted);
         Assert.True(topic.IsCompleted);
+        Assert.Null(topic.CategoryId);
     }
 
     [Fact]
@@ -57,7 +58,7 @@ public class LearningTopicServiceTests
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
         var fakeSessionsRep = new FakeStudySessionsRepository();
-        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance);
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
 
         // Act + Assert
         fakeTopicRep.Add(new LearningTopic { Id = 2, Title = "Test" });
@@ -74,7 +75,7 @@ public class LearningTopicServiceTests
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
         var fakeSessionsRep = new FakeStudySessionsRepository();
-        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance);
+        var service = new LearningTopicService(fakeTopicRep, fakeSessionsRep, NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
 
         // Act + Assert
         fakeTopicRep.Add(new LearningTopic { Id = 3, Title = "Test" });
@@ -89,7 +90,7 @@ public class LearningTopicServiceTests
     {
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
-        var service = new LearningTopicService(fakeTopicRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance);
+        var service = new LearningTopicService(fakeTopicRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
 
         fakeTopicRep.Add(new LearningTopic { Id = 1, Title = "Old" });
 
@@ -113,10 +114,83 @@ public class LearningTopicServiceTests
     {
         // Arrange
         var fakeTopicRep = new FakeLearningTopicRepository();
-        var service = new LearningTopicService(fakeTopicRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance);
+        var service = new LearningTopicService(fakeTopicRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
 
         // Act + Assert
         await Assert.ThrowsAsync<TopicNotFoundException>(() => service.UpdateAsync(1, new UpdateLearningTopicRequest { Title = "test"}));
     }
 
+    [Fact]
+    public async Task CreateAsync_WithExistingCategory_AssignsCategory()
+    {
+        // Arrange
+        var categoryFakeRep = new FakeCategoryRepository();
+        var topicFakeRep = new FakeLearningTopicRepository();
+        var service = new LearningTopicService(topicFakeRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance, categoryFakeRep);
+        categoryFakeRep.Add(new Category { Id = 1});
+
+        // Act + Assert
+        await service.CreateAsync(new CreateLearningTopicRequest {Title="test", Description="f", CategoryId = 1});
+
+        Assert.Single(topicFakeRep.Topics);
+        Assert.True(topicFakeRep.Topics[0].CategoryId == 1);
+
+    }
+
+    [Fact]
+    public async Task CreateAsync_CategoryNotFound_ThrowsCategoryNotFoundException()
+    {
+        // Arrange
+        var topicFakeRep = new FakeLearningTopicRepository();
+        var service = new LearningTopicService(topicFakeRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
+
+        // Act + Assert
+        await Assert.ThrowsAsync<CategoryNotFoundException>(() => service.CreateAsync(new CreateLearningTopicRequest { Title="test", CategoryId = 1}));
+        Assert.Empty(topicFakeRep.Topics);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithExistingCategory_ChangesCategory()
+    {
+        // Arrange
+        var categoryFakeRep = new FakeCategoryRepository();
+        var topicFakeRep = new FakeLearningTopicRepository();
+        var service = new LearningTopicService(topicFakeRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance, categoryFakeRep);
+        categoryFakeRep.Add(new Category { Id = 1 });
+        categoryFakeRep.Add(new Category { Id = 5 });
+        topicFakeRep.Add(new LearningTopic {Id = 1, Title="test", CategoryId = 1 });
+
+        // Act + Assert
+        await service.UpdateAsync(1, new UpdateLearningTopicRequest { CategoryId = 5});
+
+        Assert.Equal(5, topicFakeRep.Topics.First().CategoryId);
+
+    }
+
+    [Fact]
+    public async Task UpdateAsync_CategoryNotFound_ThrowsCategoryNotFoundException()
+    {
+        // Arrange
+        var topicFakeRep = new FakeLearningTopicRepository();
+        var service = new LearningTopicService(topicFakeRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
+        topicFakeRep.Add(new LearningTopic { Id = 1, Title = "test", CategoryId = 1 });
+
+        // Act + Assert
+        await Assert.ThrowsAsync<CategoryNotFoundException>(() => service.UpdateAsync(1, new UpdateLearningTopicRequest { CategoryId = 5 }));
+        Assert.Equal(1, topicFakeRep.Topics[0].CategoryId);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_CategoryIdIsNull_RemovesCategory()
+    {
+        // Arrange
+        var topicFakeRep = new FakeLearningTopicRepository();
+        var service = new LearningTopicService(topicFakeRep, new FakeStudySessionsRepository(), NullLogger<LearningTopicService>.Instance, new FakeCategoryRepository());
+        topicFakeRep.Add(new LearningTopic { Id = 1, Title = "test", CategoryId = 1 });
+
+        // Act + Assert
+        await service.UpdateAsync(1, new UpdateLearningTopicRequest { Title = "test", CategoryId = null });
+
+        Assert.Null(topicFakeRep.Topics[0].CategoryId);
+    }
 }
